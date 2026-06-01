@@ -1,2 +1,5 @@
 certifi==2026.5.20
+fastapi==0.115.12
+httpx==0.28.1
 python-dotenv==1.2.2
+uvicorn==0.34.3
