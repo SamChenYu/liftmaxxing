@@ -33,6 +33,9 @@ async def fetch_arrivals(naptan_id: str) -> list[dict]:
             raise HTTPException(status_code=resp.status_code, detail=resp.text)
         return resp.json()
 
+@app.get("/")
+async def landing():
+    return {"status": "Hello, World!"}
 
 @app.get("/health")
 async def health():
