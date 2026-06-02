@@ -22,7 +22,7 @@ async def health():
 async def liftmax():
 
     data = get_last_next_trains()
-    if data == "":
+    if data == "empty":
             raise HTTPException(status_code=400, detail="Server has not polled data yet")
     return get_last_next_trains()
 

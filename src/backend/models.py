@@ -10,3 +10,6 @@ class TrainEntry(BaseModel):
     timeToLive: datetime        # e.g. 2026-06-01T22:09:00Z
     timeToStation: int          # e.g. 1504 (seconds)
 
+class StationEntry:
+    next = {}                   # TrainEntry
+    last = {}                   # TrainEntry
