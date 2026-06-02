@@ -56,6 +56,7 @@ async def fetch_arrivals(naptan_id: str) -> list[dict]:
 
     UK = ZoneInfo("Europe/London")
     for d in data:
-        d.expectedArrival = d.expectedArrival.astimezone(UK)
-        
+        d.expectedArrival = d.expectedArrival.astimezone(UK).time()
+        d.timeToLive = d.timeToLive.astimezone(UK).time()
+
     return data
