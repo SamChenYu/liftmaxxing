@@ -28,7 +28,7 @@ load_dotenv()
 TFL_BASE_URL = "https://api.tfl.gov.uk"
 TFL_APP_KEY = os.getenv("UNIFIED_PRIMARY_KEY", "")
 
-async def fetch_arrivals(naptan_id: str) -> list[dict]:
+async def fetch_arrivals_api(naptan_id: str) -> list[dict]:
     params = {}
     if TFL_APP_KEY:
         params["app_key"] = TFL_APP_KEY
