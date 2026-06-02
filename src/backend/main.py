@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from collections import deque
 from src.backend.models import TrainEntry
 from src.backend.tfl import fetch_arrivals

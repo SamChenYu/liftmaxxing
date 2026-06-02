@@ -17,6 +17,7 @@
 
 import os
 import httpx
+from fastapi import HTTPException
 from src.backend.models import TrainEntry
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
@@ -40,13 +41,13 @@ async def fetch_arrivals(naptan_id: str) -> list[dict]:
         if resp.status_code != 200:
             raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
-    # Returns RAW API for debugging
-    # return resp.json()
+    # Returns RAW JSON for debugging
+    #return resp.json()
 
     data : list[TrainEntry] = [
         TrainEntry.model_validate(item)
         for item in resp.json()
-        if "direction" in item
+        if "expectedArrival" in item
     ]
 
     now = datetime.now(timezone.utc)
@@ -56,7 +57,7 @@ async def fetch_arrivals(naptan_id: str) -> list[dict]:
 
     UK = ZoneInfo("Europe/London")
     for d in data:
-        d.expectedArrival = d.expectedArrival.astimezone(UK).time()
-        d.timeToLive = d.timeToLive.astimezone(UK).time()
+        d.expectedArrival = d.expectedArrival.astimezone(UK)#.time()
+        d.timeToLive = d.timeToLive.astimezone(UK)#.time()
 
     return data
