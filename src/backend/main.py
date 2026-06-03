@@ -20,11 +20,10 @@ async def health():
 # Main API
 @app.get("/liftmax")
 async def liftmax():
-
-    data = get_last_next_trains()
+    data = await get_last_next_trains()
     if data == "empty":
             raise HTTPException(status_code=400, detail="Server has not polled data yet")
-    return get_last_next_trains()
+    return data
 
 
 @app.get("/debug/elizabeth")

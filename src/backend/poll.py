@@ -9,7 +9,7 @@ ELIZABETH_LINE_NAPTAN = "910GWCHAPXR"
 OVERGROUND_NAPTAN = "910GWCHAPEL"
 DISTRICTHAMMERSMITH_NAPTAN = "940GZZLUWPL"
 
-arrivals_buffer = deque(maxlen = 10)    # ping every 30 seconds, hold up to 5 mins data
+arrivals_buffer = deque(maxlen = 20)    # ping every 30 seconds, hold up to 10 mins data
                                         # contains the next train ONLY for each platform
 platform_map = {
     "A": "elizabeth_a",
@@ -23,32 +23,37 @@ platform_map = {
 
 async def poll():
     while True:
-        next_entry = {}
-
-        arrivals = await get_elizabeth_arrivals_api()
-        arrivals += await get_overground_arrivals_api()
-        arrivals += await get_district_hammersmith_arrivals_api()
-        
-        # list has already been sorted time wise - traverse and just take the next unique station as the next incoming train for this entry
-        for entry in arrivals:
-            key = platform_map.get(entry.platformName)
-
-            if key and key not in next_entry:
-                next_entry[key] = entry
-
-            if len(next_entry) == len(platform_map):
-                break
-
-        arrivals_buffer.append(next_entry)
+        await fetch_and_process_arrivals()
         print(f"[{datetime.now()}] Done polling")
         await asyncio.sleep(30)
 
+async def fetch_and_process_arrivals():
+    next_entry = {}
+
+    arrivals = await get_elizabeth_arrivals_api()
+    arrivals += await get_overground_arrivals_api()
+    arrivals += await get_district_hammersmith_arrivals_api()
+    
+    # list has already been sorted time wise - traverse and just take the next unique station as the next incoming train for this entry
+    for entry in arrivals:
+        key = platform_map.get(entry.platformName)
+
+        if key and key not in next_entry:
+            next_entry[key] = entry
+
+        if len(next_entry) == len(platform_map):
+            break
+
+    arrivals_buffer.append(next_entry)
+    print(f"[{datetime.now()}] Done processing")
 
 
-def get_last_next_trains():
+async def get_last_next_trains():
     if len(arrivals_buffer) == 0:
         return "empty"
     
+    await fetch_and_process_arrivals() # pre-emptive
+
     next_snapshot = arrivals_buffer[-1]
 
     last_snapshot = {}
