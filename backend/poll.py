@@ -24,7 +24,6 @@ platform_map = {
 async def poll():
     while True:
         await fetch_and_process_arrivals()
-        print(f"[{datetime.now()}] Done polling")
         await asyncio.sleep(30)
 
 async def fetch_and_process_arrivals():
@@ -45,7 +44,6 @@ async def fetch_and_process_arrivals():
             break
 
     arrivals_buffer.append(next_entry)
-    print(f"[{datetime.now()}] Done processing")
 
 
 async def get_last_next_trains():
@@ -86,20 +84,14 @@ async def get_last_next_trains():
 async def get_elizabeth_arrivals_api():
     elizabeth_arrivals = await fetch_arrivals_api(ELIZABETH_LINE_NAPTAN)
     elizabeth_arrivals = [a for a in elizabeth_arrivals if a.lineId == "elizabeth"]
-    if (len(elizabeth_arrivals) == 0):
-        print(f"[{datetime.now()}] WARNING: Elizabeth Line API returned length 0")
     return elizabeth_arrivals
 
 async def get_overground_arrivals_api():
     overground_arrivals = await fetch_arrivals_api(OVERGROUND_NAPTAN)
     overground_arrivals = [a for a in overground_arrivals if a.lineId == "windrush"]
-    if (len(overground_arrivals) == 0):
-        print(f"[{datetime.now()}] WARNING: Overground Line API returned length 0")
     return overground_arrivals
 
 async def get_district_hammersmith_arrivals_api():
     dhs_arrivals = await fetch_arrivals_api(DISTRICTHAMMERSMITH_NAPTAN)
     dhs_arrivals = [a for a in dhs_arrivals if a.lineId == "district" or a.lineId == "hammersmith"]
-    if (len(dhs_arrivals) == 0):
-        print(f"[{datetime.now()}] WARNING: DHS Line API returned length 0")
     return dhs_arrivals

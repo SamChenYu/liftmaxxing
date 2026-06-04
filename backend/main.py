@@ -16,10 +16,6 @@ async def startup():
 
     asyncio.create_task(poll())
 
-@app.get("/")
-async def landing():
-    return {"status": "Hello, World!"}
-
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -51,8 +47,6 @@ async def data(request: Request):
         json.dump(data, file, indent=2)
 
     tmp_file.replace(data_collection_file)
-
-    return {"status": "ok"}
 
 
 
