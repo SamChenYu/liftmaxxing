@@ -9,7 +9,7 @@ ELIZABETH_LINE_NAPTAN = "910GWCHAPXR"
 OVERGROUND_NAPTAN = "910GWCHAPEL"
 DISTRICTHAMMERSMITH_NAPTAN = "940GZZLUWPL"
 
-arrivals_buffer = deque(maxlen = 20)    # ping every 30 seconds, hold up to 10 mins data
+arrivals_buffer = deque(maxlen = 30)    # ping every 30 seconds, hold up to 10 mins data
                                         # contains the next train ONLY for each platform
 platform_map = {
     "A": "elizabeth_a",

@@ -377,36 +377,19 @@ header .sub {
   line-height: 1;
 }
 
-.time.soon {
-  color: var(--soon);
-}
-
-.time.urgent {
+.time.departed {
   color: var(--urgent);
 }
 
-.time.due {
-  color: var(--urgent);
-  animation: pulse 1s ease-in-out infinite;
-}
-
-.time.arrived {
-  color: var(--text-secondary);
+.time.no-data-text {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 @media (min-width: 768px) {
   .time {
     font-size: 28px;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
   }
 }
 

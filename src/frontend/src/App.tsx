@@ -39,27 +39,28 @@ function platformLabel(lineId: string, name: string): { label: string; lift: boo
   return { label: name, lift: false }
 }
 
-function fmt(sec: number): string {
-  if (sec <= 0) return 'Due'
+function fmtCountdown(sec: number): string {
   if (sec < 60) return `${sec}s`
   const m = Math.floor(sec / 60)
   const s = sec % 60
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-function fmtAgo(sec: number): string {
-  const ago = Math.abs(sec)
-  if (ago < 60) return `${ago}s ago`
+function fmtDeparted(secAgo: number): string {
+  const ago = Math.abs(secAgo)
+  if (ago < 60) return `arrived ${ago}s ago`
   const m = Math.floor(ago / 60)
   const s = ago % 60
-  return `${m}:${s.toString().padStart(2, '0')} ago`
+  return `arrived ${m}:${s.toString().padStart(2, '0')} ago`
 }
 
-function urg(sec: number) {
-  if (sec <= 0) return 'due'
-  if (sec < 60) return 'urgent'
-  if (sec < 180) return 'soon'
-  return ''
+function getOrCreateUserId(): string {
+  let id = localStorage.getItem('liftmaxxing-uid')
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem('liftmaxxing-uid', id)
+  }
+  return id
 }
 
 function groupByLine(entries: Record<string, TrainArrival>) {
@@ -67,7 +68,7 @@ function groupByLine(entries: Record<string, TrainArrival>) {
   for (const t of Object.values(entries)) {
     ;(g[t.lineId] ??= []).push(t)
   }
-  for (const a of Object.values(g)) a.sort((x, y) => x.timeToStation - y.timeToStation)
+  for (const a of Object.values(g)) a.sort((x, y) => new Date(x.expectedArrival).getTime() - new Date(y.expectedArrival).getTime())
   return g
 }
 
@@ -127,6 +128,7 @@ export default function App() {
           timestamp: new Date().toISOString(),
           made_it: madeIt,
           direction: dir,
+          user_id: getOrCreateUserId(),
         }),
       })
       setSubmitResult('success')
@@ -140,9 +142,6 @@ export default function App() {
       }, 1200)
     }
   }
-
-  const elapsed = Math.floor((now - fetchedAt) / 1000)
-  const adj = (tts: number) => Math.max(0, tts - elapsed)
 
   const order =
     dir === 'district-to-elizabeth'
@@ -205,9 +204,13 @@ export default function App() {
 
       {data &&
         order.map((lineId) => {
-          const nextTrains = nextG[lineId]
-          const lastTrains = lastG[lineId]
-          if (!nextTrains?.length && !lastTrains?.length) return null
+          const nextTrains = nextG[lineId] || []
+          const lastTrains = lastG[lineId] || []
+          const lastByPlat: Record<string, TrainArrival> = {}
+          const nextByPlat: Record<string, TrainArrival> = {}
+          for (const t of lastTrains) lastByPlat[t.platformName] = t
+          for (const t of nextTrains) nextByPlat[t.platformName] = t
+          const platforms = [...new Set([...Object.keys(lastByPlat), ...Object.keys(nextByPlat)])]
           const l = LINES[lineId]
           return (
             <div key={lineId} className="line-group">
@@ -216,53 +219,41 @@ export default function App() {
                 {l.name}
               </div>
               <div className="line-columns">
-                <div className="col">
-                  <h3>Last</h3>
-                  <div className="col-cards">
-                    {lastTrains?.length ? (
-                      lastTrains.map((t) => {
-                        const raw = t.timeToStation - elapsed
-                        const arrived = raw <= 0
-                        const p = platformLabel(t.lineId, t.platformName)
-                        return (
-                          <div key={t.vehicleId} className="card" style={{ borderLeftColor: l.color }}>
-                            <span className="plat">
-                              {p.label}
-                              {p.lift && <span className="lift-tag">Lift</span>}
-                            </span>
-                            <span className={`time ${arrived ? 'arrived' : urg(raw)}`}>
-                              {arrived ? fmtAgo(raw) : fmt(raw)}
-                            </span>
-                          </div>
-                        )
-                      })
-                    ) : (
-                      <div className="no-data">No recent arrivals</div>
-                    )}
-                  </div>
-                </div>
-                <div className="col">
-                  <h3>Next</h3>
-                  <div className="col-cards">
-                    {nextTrains?.length ? (
-                      nextTrains.map((t) => {
-                        const r = adj(t.timeToStation)
-                        const p = platformLabel(t.lineId, t.platformName)
-                        return (
-                          <div key={t.vehicleId} className="card" style={{ borderLeftColor: l.color }}>
-                            <span className="plat">
-                              {p.label}
-                              {p.lift && <span className="lift-tag">Lift</span>}
-                            </span>
-                            <span className={`time ${urg(r)}`}>{fmt(r)}</span>
-                          </div>
-                        )
-                      })
-                    ) : (
-                      <div className="no-data">No upcoming trains</div>
-                    )}
-                  </div>
-                </div>
+                {(['last', 'next'] as const).map((col) => {
+                  const byPlat = col === 'last' ? lastByPlat : nextByPlat
+                  return (
+                    <div key={col} className="col">
+                      <h3>{col === 'last' ? 'Last' : 'Next'}</h3>
+                      <div className="col-cards">
+                        {platforms.map((platName) => {
+                          const t = byPlat[platName]
+                          const p = platformLabel(lineId, platName)
+                          if (!t) {
+                            return (
+                              <div key={platName} className="card" style={{ borderLeftColor: l.color }}>
+                                <span className="plat">{p.label}</span>
+                                <span className="time no-data-text">API data not available</span>
+                              </div>
+                            )
+                          }
+                          const diff = Math.floor((new Date(t.expectedArrival).getTime() - now) / 1000)
+                          const departed = diff <= 0
+                          return (
+                            <div key={platName} className="card" style={{ borderLeftColor: l.color }}>
+                              <span className="plat">
+                                {p.label}
+                                {p.lift && <span className="lift-tag">Lift</span>}
+                              </span>
+                              <span className={`time ${departed ? 'departed' : ''}`}>
+                                {departed ? fmtDeparted(diff) : fmtCountdown(diff)}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )
