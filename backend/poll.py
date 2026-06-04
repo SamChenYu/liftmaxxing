@@ -1,6 +1,6 @@
 import asyncio
-from src.backend.tfl import fetch_arrivals_api
-from src.backend.models import StationEntry
+from backend.tfl import fetch_arrivals_api
+from backend.models import StationEntry
 from collections import deque
 from datetime import datetime
 

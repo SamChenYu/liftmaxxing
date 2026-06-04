@@ -1,7 +1,7 @@
 import asyncio
 from fastapi import FastAPI, HTTPException
 
-from src.backend.poll import poll, get_elizabeth_arrivals_api, get_overground_arrivals_api, get_district_hammersmith_arrivals_api, get_last_next_trains
+from backend.poll import poll, get_elizabeth_arrivals_api, get_overground_arrivals_api, get_district_hammersmith_arrivals_api, get_last_next_trains
 
 app = FastAPI(title="Liftmaxxing API")
 

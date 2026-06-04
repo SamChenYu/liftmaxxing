@@ -1,2 +1,2 @@
 venv/Scripts/Activate.ps1
-uvicorn src.backend.main:app --reload
+uvicorn backend.main:app --reload

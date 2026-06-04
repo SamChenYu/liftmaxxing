@@ -2,7 +2,7 @@ venv/
 __pycache__/
 *.pyc
 node_modules/
-src/frontend/dist/
+frontend/dist/
 .git/
 .env
 *.md

@@ -18,7 +18,7 @@
 import os
 import httpx
 from fastapi import HTTPException
-from src.backend.models import TrainEntry
+from backend.models import TrainEntry
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 from dotenv import load_dotenv
