@@ -121,7 +121,7 @@ export default function App() {
   const submitData = async (madeIt: boolean) => {
     setSubmitting(true)
     try {
-      await fetch(`${base}/api/data`, {
+      const r = await fetch(`${base}/api/data`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -131,6 +131,7 @@ export default function App() {
           user_id: getOrCreateUserId(),
         }),
       })
+      if (!r.ok) throw new Error(`Server error ${r.status}`)
       setSubmitResult('success')
     } catch {
       setSubmitResult('error')
