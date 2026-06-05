@@ -57,7 +57,10 @@ function fmtDeparted(secAgo: number): string {
 function getOrCreateUserId(): string {
   let id = localStorage.getItem('liftmaxxing-uid')
   if (!id) {
-    id = crypto.randomUUID()
+    const arr = new Uint8Array(16)
+    crypto.getRandomValues(arr)
+    id = Array.from(arr, b => b.toString(16).padStart(2, '0')).join('')
+    id = `${id.slice(0,8)}-${id.slice(8,12)}-${id.slice(12,16)}-${id.slice(16,20)}-${id.slice(20)}`
     localStorage.setItem('liftmaxxing-uid', id)
   }
   return id
@@ -133,7 +136,8 @@ export default function App() {
       })
       if (!r.ok) throw new Error(`Server error ${r.status}`)
       setSubmitResult('success')
-    } catch {
+    } catch (e) {
+      console.error('submitData failed:', e)
       setSubmitResult('error')
     } finally {
       setSubmitting(false)
