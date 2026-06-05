@@ -168,18 +168,20 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <button className="data-btn" onClick={() => setModalOpen(true)}>
-          Data Collection
-        </button>
+        <div className="header-bar">
+          <button className="data-btn" onClick={() => setModalOpen(true)}>
+            Data Collection
+          </button>
+          <button
+            className="theme-toggle"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? '☀' : '☾'}
+          </button>
+        </div>
         <h1>LiftMaxxing</h1>
         <p className="sub">Whitechapel Interchange</p>
-        <button
-          className="theme-toggle"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? '☀' : '☾'}
-        </button>
       </header>
 
       <nav className="toggle">
