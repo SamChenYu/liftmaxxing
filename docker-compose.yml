@@ -14,6 +14,9 @@ services:
       dockerfile: frontend/Dockerfile
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/ssl/cloudflare:/etc/ssl/cloudflare:ro
     depends_on:
       - backend
     restart: unless-stopped
