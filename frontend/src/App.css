@@ -52,6 +52,7 @@ header h1 {
   font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--white);
+  padding: 0 110px;
 }
 
 header .sub {
@@ -67,6 +68,7 @@ header .sub {
 
   header h1 {
     font-size: 34px;
+    padding: 0;
   }
 
   header .sub {
@@ -379,6 +381,7 @@ header .sub {
 
 .time.departed {
   color: var(--urgent);
+  font-size: 14px;
 }
 
 .time.no-data-text {
@@ -390,6 +393,10 @@ header .sub {
 @media (min-width: 768px) {
   .time {
     font-size: 28px;
+  }
+
+  .time.departed {
+    font-size: 20px;
   }
 }
 
