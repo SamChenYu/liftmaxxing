@@ -23,7 +23,10 @@ platform_map = {
 
 async def poll():
     while True:
-        await fetch_and_process_arrivals()
+        try:
+            await fetch_and_process_arrivals()
+        except Exception as e:
+            print(f"[{datetime.now()}] polling failed: {type(e).__name__}")
         await asyncio.sleep(30)
 
 async def fetch_and_process_arrivals():
@@ -50,7 +53,11 @@ async def get_last_next_trains():
     if len(arrivals_buffer) == 0:
         return "empty"
     
-    await fetch_and_process_arrivals() # pre-emptive
+    try:
+        await fetch_and_process_arrivals() # pre-emptive on demand request
+    except Exception as e:
+        print(f"[{datetime.now()}] user fetch failed: {type(e).__name__}") # failed, just swallow the error and use the current buffer data
+        
 
     next_snapshot = arrivals_buffer[-1]
 

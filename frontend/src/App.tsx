@@ -99,7 +99,10 @@ export default function App() {
   const load = useCallback(async () => {
     try {
       const r = await fetch(`${base}/liftmax`)
-      if (!r.ok) throw new Error(r.status === 400 ? 'Waiting for station data…' : `Error ${r.status}`)
+      if (!r.ok) {
+        const body = await r.json().catch(() => null)
+        throw new Error(r.status === 400 ? 'Waiting for station data…' : `Error ${r.status}: ${body?.detail ?? r.statusText}`)
+      }
       setData(await r.json())
       setFetchedAt(Date.now())
       setError(null)
