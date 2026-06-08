@@ -170,7 +170,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <header>
+      <header className="fade-up">
         <div className="header-bar">
           <button className="data-btn" onClick={() => setModalOpen(true)}>
             Data Collection
@@ -187,7 +187,7 @@ export default function App() {
         <p className="sub">Whitechapel Interchange</p>
       </header>
 
-      <nav className="toggle">
+      <nav className="toggle fade-up" style={{ animationDelay: '80ms' }}>
         <button className={dir === 'district-to-elizabeth' ? 'on' : ''} onClick={() => setDir('district-to-elizabeth')}>
           <span className="dot" style={{ background: 'var(--district)' }} />
           District → Eliz.
@@ -200,7 +200,7 @@ export default function App() {
         </button>
       </nav>
 
-      <div className="prediction">
+      <div className="prediction fade-up" style={{ animationDelay: '160ms' }}>
         <span className="prediction-pct">50%</span>
         <span className="prediction-label">chance of making the lift</span>
         <span className="prediction-note">Placeholder — model not yet trained (collecting data)</span>
@@ -223,7 +223,7 @@ export default function App() {
           const platforms = [...new Set([...Object.keys(lastByPlat), ...Object.keys(nextByPlat)])]
           const l = LINES[lineId]
           return (
-            <div key={lineId} className="line-group">
+            <div key={lineId} className="line-group fade-up" style={{ animationDelay: `${240 + order.indexOf(lineId) * 80}ms` }}>
               <div className="line-label" style={{ color: l.color }}>
                 <span className="line-dot" style={{ background: l.color }} />
                 {l.name}
@@ -269,7 +269,7 @@ export default function App() {
           )
         })}
 
-      {data && <footer>Updated {new Date(fetchedAt).toLocaleTimeString()}</footer>}
+      {data && <footer className="fade-up" style={{ animationDelay: '480ms' }}>Updated {new Date(fetchedAt).toLocaleTimeString()}</footer>}
 
       {modalOpen && (
         <div className="modal-overlay" onClick={() => !submitting && setModalOpen(false)}>
